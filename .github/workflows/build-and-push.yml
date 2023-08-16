@@ -26,8 +26,7 @@ jobs:
     outputs:
       images: ${{ steps.image-list.outputs.json }}
     steps:
-
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
@@ -43,31 +42,31 @@ jobs:
           # 3. For PRs, diff the base ref vs the current commit
           # 4. For everything else (e.g., dispatches), build all images
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]] ||
-            [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-              if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-                  BASE=$(git merge-base origin/$GITHUB_BASE_REF HEAD)
-              elif [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-                  BASE=${{github.event.before}}
-              else
-                  BASE=origin/master
-              fi
-              # List image root dirs where files have changed and the
-              # root dir exists. Example value:
-              # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
-              images=$(git diff --name-only \
-                                "$BASE" \
-                                "$GITHUB_SHA" |
+             [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+               if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+                   BASE=$(git merge-base origin/$GITHUB_BASE_REF HEAD)
+               elif [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+                   BASE=${{github.event.before}}
+               else
+                   BASE=origin/master
+               fi
+               # List image root dirs where files have changed and the
+               # root dir exists. Example value:
+               # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
+               images=$(git diff --name-only \
+                                 "$BASE" \
+                                 "$GITHUB_SHA" |
                         egrep "^$ORG_DIR/" |
                         cut -d/ -f -2 |
                         sort |
                         uniq |
                         xargs -I {} find . -type d \
-                                          -wholename ./{} \
-                                          -printf "%P\n")
+                                           -wholename ./{} \
+                                           -printf "%P\n")
           else
-              # List all image root dirs. Example value:
-              # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
-              images=$(find $ORG_DIR -mindepth 1 \
+               # List all image root dirs. Example value:
+               # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
+               images=$(find $ORG_DIR -mindepth 1 \
                                       -maxdepth 1 \
                                       -type d \
                                       -printf "$ORG_DIR/%P\n")
@@ -79,10 +78,12 @@ jobs:
           image_json=$(echo -n "${images:-dummy}" | jq -Rcs '.|split("\n")')
           echo "::set-output name=json::$image_json"
           echo $image_json
-      
+          
       - name: Extract Tag from Dockerfile
       id: extract_tag
       run: echo "::set-output name=tag::$(grep 'LABEL tag=' Dockerfile | sed -e 's/.*=//')"
+
+  
 
   # build:
 
