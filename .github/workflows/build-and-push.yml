@@ -20,6 +20,91 @@ jobs:
         id: mkdatetag
         run: echo "::set-output name=dtag::$(date +%Y%m%d-%H%M)"
 
+name: Build and push container images
+
+on:
+  push:
+    branches:
+      - main
+      - container-test
+  repository_dispatch:
+    types:
+      - dispatch-build
+  workflow_dispatch:
+
+jobs:
+  make-date-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      dtag: ${{ steps.mkdatetag.outputs.dtag }}
+    steps:
+      - name: make date tag
+        id: mkdatetag
+        run: echo "::set-output name=dtag::$(date +%Y%m%d-%H%M)"
+
+  build-image-list:
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.image-list.outputs.json }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - id: image-list
+        run: |
+          ORG_DIR=docker-wrappers
+          # Get the list of files changed based on the type of event
+          # kicking off the GHA:
+          # 1. For the main branch, diff the previous state of main vs
+          #    the current commit
+          # 2. For other branches (i.e., on someone's fork), diff main
+          #    vs the current commit
+          # 3. For PRs, diff the base ref vs the current commit
+          # 4. For everything else (e.g., dispatches), build all images
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]] ||
+             [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+               if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+                   BASE=$(git merge-base origin/$GITHUB_BASE_REF HEAD)
+               elif [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+                   BASE=${{github.event.before}}
+               else
+                   BASE=origin/master
+               fi
+               # List image root dirs where files have changed and the
+               # root dir exists. Example value:
+               # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
+               images=$(git diff --name-only \
+                                 "$BASE" \
+                                 "$GITHUB_SHA" |
+                        egrep "^$ORG_DIR/" |
+                        cut -d/ -f -2 |
+                        sort |
+                        uniq |
+                        xargs -I {} find . -type d \
+                                           -wholename ./{} \
+                                           -printf "%P\n")
+          else
+               # List all image root dirs. Example value:
+               # "opensciencegrid/vo-frontend opensciencegrid/ospool-cm"
+               images=$(find $ORG_DIR -mindepth 1 \
+                                      -maxdepth 1 \
+                                      -type d \
+                                      -printf "$ORG_DIR/%P\n")
+          fi
+
+          # Ensure that the generated JSON array has a member,
+          # otherwise GHA will throw an error about an empty matrix
+          # vector in subsequent steps
+          image_json=$(echo -n "${images:-dummy}" | jq -Rcs '.|split("\n")')
+          echo "::set-output name=json::$image_json"
+          echo $image_json
+
+
+
+
+
+
   build-image-list:
     runs-on: ubuntu-latest
     outputs:
@@ -44,17 +129,23 @@ jobs:
           echo "::set-output name=json::$image_json"
           echo $image_json
 
-  extract-dockerfile-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.extract_tag.outputs.tag }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+          for dir in $image_json
+          do
+            echo "::set-output name=tag::$(grep 'LABEL tag=' $dir/Dockerfile | sed -e 's/.*=//')"
+          done
 
-      - name: Extract Tag from Dockerfile
-        id: extract_tag
-        run: echo "::set-output name=tag::$(grep 'LABEL tag=' Dockerfile | sed -e 's/.*=//')"
+
+  # extract-dockerfile-tag:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     tag: ${{ steps.extract_tag.outputs.tag }}
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Extract Tag from Dockerfile
+  #       id: extract_tag
+  #       run: echo "::set-output name=tag::$(grep 'LABEL tag=' Dockerfile | sed -e 's/.*=//')"
 
   # build:
 
