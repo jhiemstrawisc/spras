@@ -27,7 +27,6 @@ jobs:
       images: ${{ steps.image-list.outputs.json }}
     steps:
 
-    - name: get build list
       uses: actions/checkout@v2
         with:
           fetch-depth: 0
