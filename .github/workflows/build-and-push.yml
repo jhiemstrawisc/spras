@@ -82,7 +82,8 @@ jobs:
           echo $image_json | jq -r '.[]'
 
 
-          echo $image_json | jq -r '.[]' | while read -r dir; do
+          echo "$image_json" | jq -r '.[]' | while IFS= read -r dir; do
+
             echo "Processing file: $(dir)"
             # echo "current dir: $(pwd)"
             # echo "Tag is $(grep 'LABEL tag=' docker-wrappers/$(dir)/Dockerfile | sed -e 's/.*=//')"
