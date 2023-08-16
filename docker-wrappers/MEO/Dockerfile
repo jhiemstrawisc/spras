@@ -6,6 +6,7 @@ WORKDIR /meo
 RUN export MEO_TAG=v1.1.0 && \
     wget https://raw.githubusercontent.com/agitter/meo/$MEO_TAG/EOMain.jar
 
+RUN echo "foo"
 # Provide only the properties file as an argument to the jar file
 # No longer set an ENTRYPOINT so that singularity exec can be used in addition to docker run
 # ENTRYPOINT ["java", "-jar", "/meo/EOMain.jar"]
