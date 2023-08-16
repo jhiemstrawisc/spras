@@ -21,41 +21,40 @@ jobs:
         run: echo "::set-output name=dtag::$(date +%Y%m%d-%H%M)"
 
   build-image-list:
-      runs-on: ubuntu-latest
-      outputs:
-        images: ${{ steps.image-list.outputs.json }}
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.image-list.outputs.json }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-        - id: image-list
-          run: |
-            ORG_DIR=docker-wrappers
-            # Get the list of files changed based on the type of event
-            # kicking off the GHA:
-            # ... (your existing logic) ...
+      - id: image-list
+        run: |
+          ORG_DIR=docker-wrappers
+          # Get the list of files changed based on the type of event
+          # kicking off the GHA:
+          # ... (your existing logic) ...
 
-            # Ensure that the generated JSON array has a member,
-            # otherwise GHA will throw an error about an empty matrix
-            # vector in subsequent steps
-            image_json=$(echo -n "${images:-dummy}" | jq -Rcs '.|split("\n")')
-            echo "::set-output name=json::$image_json"
-            echo $image_json
+          # Ensure that the generated JSON array has a member,
+          # otherwise GHA will throw an error about an empty matrix
+          # vector in subsequent steps
+          image_json=$(echo -n "${images:-dummy}" | jq -Rcs '.|split("\n")')
+          echo "::set-output name=json::$image_json"
+          echo $image_json
 
-    extract-dockerfile-tag:
-      runs-on: ubuntu-latest
-      outputs:
-        tag: ${{ steps.extract_tag.outputs.tag }}
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
+  extract-dockerfile-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.extract_tag.outputs.tag }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-        - name: Extract Tag from Dockerfile
-          id: extract_tag
-          run: echo "::set-output name=tag::$(grep 'LABEL tag=' Dockerfile | sed -e 's/.*=//')"
-    
+      - name: Extract Tag from Dockerfile
+        id: extract_tag
+        run: echo "::set-output name=tag::$(grep 'LABEL tag=' Dockerfile | sed -e 's/.*=//')"
 
   # build:
 
