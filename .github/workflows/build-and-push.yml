@@ -78,7 +78,7 @@ jobs:
           echo "::set-output name=json::$image_json"
           echo $image_json
 
-          jq -c '.[]' $image_json | while read dir; do
-            echo 
-            #echo "::set-output name=tag::$(grep 'LABEL tag=' $(dir)/Dockerfile | sed -e 's/.*=//')"
+          echo $image_json | jq -c '.[]' | while read -r dir; do
+            echo "Processing directory: $dir"
+            echo "::set-output name=tag::$(grep 'LABEL tag=' $(dir)/Dockerfile | sed -e 's/.*=//')"
           done
