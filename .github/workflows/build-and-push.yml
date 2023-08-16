@@ -77,6 +77,7 @@ jobs:
           # vector in subsequent steps
           image_json=$(echo -n "${images:-dummy}" | jq -Rcs '.|split("\n")')
           echo "::set-output name=json::$image_json"
+          echo $image_json
 
   # build:
 
