@@ -1,6 +1,7 @@
 # Maximum Edge Orientation wrapper
 # https://github.com/agitter/meo/
 FROM openjdk:8
+LABEL tag=v0.0.1-1
 
 WORKDIR /meo
 RUN export MEO_TAG=v1.1.0 && \
