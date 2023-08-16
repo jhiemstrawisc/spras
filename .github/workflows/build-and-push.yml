@@ -80,7 +80,7 @@ jobs:
 
           echo $image_json | jq -c '.[]' | while read -r dir; do
             echo "Processing directory: $(dir)/Dockerfile"
-            echo "current dir: $(cwd)"
+            echo "current dir: $(pwd)"
             echo "Tag is $(grep 'LABEL tag=' $docker-wrappers/(dir)/Dockerfile | sed -e 's/.*=//')"
             echo "::set-output name=tag::$(grep 'LABEL tag=' $(dir)/Dockerfile | sed -e 's/.*=//')"
           done
