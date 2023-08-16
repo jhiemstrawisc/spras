@@ -48,7 +48,7 @@ jobs:
                elif [[ $GITHUB_REF == 'refs/heads/main' ]]; then
                    BASE=${{github.event.before}}
                else
-                   BASE=origin/main
+                   BASE=origin/master
                fi
                # List image root dirs where files have changed and the
                # root dir exists. Example value:
