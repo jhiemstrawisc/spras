@@ -88,3 +88,5 @@ jobs:
             #echo "Tag is $(grep 'LABEL tag=' $dir/Dockerfile | sed -e 's/.*=//')"
             echo "::set-output name=tag::$(grep 'LABEL tag=' $dir/Dockerfile | sed -e 's/.*=//')"
           done
+
+          echo "foo test"

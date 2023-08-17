@@ -1,6 +1,6 @@
 #uses ubuntu as the base
 FROM python:3.10.7
-LABEL version=v1.2.3-5
+LABEL tag=v1.2.3-5
 WORKDIR /MinCostFlow
 
 RUN pip install ortools==9.4.1874
