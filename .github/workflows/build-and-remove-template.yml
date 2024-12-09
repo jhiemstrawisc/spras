@@ -64,9 +64,9 @@ jobs:
           echo "changed: $CHANGED"
 
       - name: Set env.changed=true if always_build
-        if: ${{ inputs.always_build }} == 'true'
+        if: ${{ inputs.always_build }} == 'foobar'
         run: |
-          echo "Input for job 'always_build' is true -- building regardless of detected changes."
+          echo "Input for job 'always_build' is "foobar" -- building regardless of detected changes."
           echo "changed=true" >> $GITHUB_ENV
 
       - name: Debug always_build input 3
