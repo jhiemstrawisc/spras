@@ -38,7 +38,7 @@ jobs:
       # check whether anything at that path has been modified relative to master's head.
       # If so, we'll set `env.changed=true` to trigger the build in a later step
       - name: Check for changes
-        if: inputs.always-build == 'false'
+        if: ${{ inputs.always-build }} == 'false'
         id: check_changes
         run: |
           if git fetch origin master && git diff --name-only origin/master | grep -q "$(basename ${{ inputs.path }})"; then
@@ -50,7 +50,7 @@ jobs:
           fi
 
       - name: Set changed to true for always-build
-        if: ${{ inputs.always-build }} == 'false'
+        if: ${{ inputs.always-build }} == 'true'
         run: |
           echo "Always-build is true -- building regardless of detected changes."
           echo "changed=true" >> $GITHUB_ENV
