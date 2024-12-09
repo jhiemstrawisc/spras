@@ -34,6 +34,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+
+      - name: Debug always-build input
+        run: |
+          echo "always-build: ${{ inputs.always-build }}"
+
       # Given the input path to the directory containing definitions of the container,
       # check whether anything at that path has been modified relative to master's head.
       # If so, we'll set `env.changed=true` to trigger the build in a later step
@@ -48,6 +53,12 @@ jobs:
             echo "No changes detected to ${{ inputs.path}}"
             echo "changed=false" >> $GITHUB_ENV
           fi
+
+      - name: Debug always-build input 2
+        run: |
+          echo "always-build: ${{ inputs.always-build }}"
+          echo "github env: $GITHUB_ENV"
+          echo "changed: $CHANGED"
 
       - name: Set changed to true for always-build
         if: ${{ inputs.always-build }} == 'true'
