@@ -52,7 +52,7 @@ jobs:
       - name: Set changed to true for always-build
         if: ${{ inputs.always-build }} == 'true'
         run: |
-          echo "Always-build is true -- building regardless of detected changes."
+          echo "Input for job 'always-build' is true -- building regardless of detected changes."
           echo "changed=true" >> $GITHUB_ENV
 
       - name: Build Docker image
