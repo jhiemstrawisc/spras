@@ -21,8 +21,9 @@ on:
         required: true
         type: string
       always-build:
-        required: true
+        required: false
         type: boolean
+        default: false
       context:
         required: false
         type: string
@@ -38,6 +39,7 @@ jobs:
       - name: Debug always-build input
         run: |
           echo "always-build: ${{ inputs.always-build }}"
+          echo `cat $GITHUB_ENV`
 
       # Given the input path to the directory containing definitions of the container,
       # check whether anything at that path has been modified relative to master's head.
@@ -58,7 +60,7 @@ jobs:
         run: |
           echo "always-build: ${{ inputs.always-build }}"
           echo "github env: $GITHUB_ENV"
-          cat $GITHUB_ENV
+          echo `cat $GITHUB_ENV`
           echo "changed: $CHANGED"
 
       - name: Set changed to true for always-build
@@ -71,7 +73,7 @@ jobs:
         run: |
           echo "always-build: ${{ inputs.always-build }}"
           echo "github env: $GITHUB_ENV"
-          cat $GITHUB_ENV
+          echo `cat $GITHUB_ENV`
           echo "changed: $CHANGED"
 
       - name: Build Docker image
