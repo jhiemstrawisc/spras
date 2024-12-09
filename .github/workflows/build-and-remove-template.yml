@@ -5,7 +5,7 @@ name: Build And Remove Docker Image
 # - path: The path to a container's Dockerfile directory, relative to the repo root
 # - container: The registry/container to be built, without a tag
 # - tag: The tag to be built
-# - always-build: A boolean indicating whether the action should condition whether it builds the container
+# - always_build: A boolean indicating whether the action should condition whether it builds the container
 #       on any detected changes
 # - context: The optional build context path, relative to the repo root.
 on:
@@ -20,7 +20,7 @@ on:
       tag:
         required: true
         type: string
-      always-build:
+      always_build:
         required: false
         type: boolean
         default: false
@@ -36,16 +36,16 @@ jobs:
         uses: actions/checkout@v2
 
 
-      - name: Debug always-build input
+      - name: Debug always_build input
         run: |
-          echo "always-build: ${{ inputs.always-build }}"
+          echo "always_build: ${{ inputs.always_build }}"
           echo `cat $GITHUB_ENV`
 
       # Given the input path to the directory containing definitions of the container,
       # check whether anything at that path has been modified relative to master's head.
       # If so, we'll set `env.changed=true` to trigger the build in a later step
       - name: Check for changes
-        if: ${{ inputs.always-build }} == 'false'
+        if: ${{ inputs.always_build }} == 'false'
         id: check_changes
         run: |
           if git fetch origin master && git diff --name-only origin/master | grep -q "$(basename ${{ inputs.path }})"; then
@@ -56,25 +56,26 @@ jobs:
             echo "changed=false" >> $GITHUB_ENV
           fi
 
-      - name: Debug always-build input 2
+      - name: Debug always_build input 2
         run: |
-          echo "always-build: ${{ inputs.always-build }}"
+          echo "always_build: ${{ inputs.always_build }}"
           echo "github env: $GITHUB_ENV"
           echo `cat $GITHUB_ENV`
           echo "changed: $CHANGED"
 
-      - name: Set changed to true for always-build
-        if: ${{ inputs.always-build }} == 'true'
+      - name: Set env.changed=true if always_build
+        if: ${{ inputs.always_build }} == 'true'
         run: |
-          echo "Input for job 'always-build' is true -- building regardless of detected changes."
+          echo "Input for job 'always_build' is true -- building regardless of detected changes."
           echo "changed=true" >> $GITHUB_ENV
 
-      - name: Debug always-build input 3
+      - name: Debug always_build input 3
         run: |
-          echo "always-build: ${{ inputs.always-build }}"
+          echo "always_build: ${{ inputs.always_build }}"
           echo "github env: $GITHUB_ENV"
           echo `cat $GITHUB_ENV`
           echo "changed: $CHANGED"
+
 
       - name: Build Docker image
         if: env.changed == 'true'
