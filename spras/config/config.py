@@ -72,7 +72,7 @@ class Config:
         # A Boolean specifying whether to unpack singularity containers. Default is False
         self.unpack_singularity = False
         # A Boolean indiciating whether to enable container runtime profiling (apptainer/singularity only)
-        self.enable_container_profiling = False
+        self.enable_profiling = False
         # A dictionary to store configured datasets against which SPRAS will be run
         self.datasets = None
         # A dictionary to store configured gold standard data against output of SPRAS runs
