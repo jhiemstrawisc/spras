@@ -303,7 +303,7 @@ class Config:
 
         if raw_config.enable_profiling and not raw_config.container_framework in ["singularity", "apptainer"]:
             warnings.warn("enable_profiling is set to true, but the container framework is not singularity/apptainer. This setting will have no effect.")
-        self.enable_container_profiling = raw_config.enable_profiling
+        self.enable_profiling = raw_config.enable_profiling
 
         self.process_datasets(raw_config)
         self.process_algorithms(raw_config)
